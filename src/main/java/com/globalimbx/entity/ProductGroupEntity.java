@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "ProductGroupEntity")
+@Table(name = "ProductGroups")
 public class ProductGroupEntity {
 
 	public static final String PRODUCT_GROUP_ID = "productGroupId";

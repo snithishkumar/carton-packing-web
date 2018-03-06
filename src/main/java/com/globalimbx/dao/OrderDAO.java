@@ -10,6 +10,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 
+import com.globalimbx.entity.DeliveryDetailsEntity;
 import com.globalimbx.entity.OrderEntity;
 import com.globalimbx.entity.ProductCategoryEntity;
 import com.globalimbx.entity.ProductColorEntity;
@@ -193,6 +194,27 @@ public class OrderDAO extends BaseDAO{
 		criteria.add(Restrictions.eq(OrderEntity.ORDER_GUID, orderGuid));
 		List<OrderEntity> orderEntities = criteria.list();
 		return orderEntities.size() > 0 ? orderEntities.get(0) : null;
+	}
+	
+	
+	public void createDeliveryDetailsEntity(DeliveryDetailsEntity deliveryDetailsEntity){
+		saveObject(deliveryDetailsEntity);
+	}
+	
+	
+	public DeliveryDetailsEntity getDeliveryDetailsEntity(OrderEntity orderEntity){
+		Criteria criteria = createCriteria(DeliveryDetailsEntity.class);
+		criteria.add(Restrictions.eq(DeliveryDetailsEntity.ORDER_ID, orderEntity));
+		List<DeliveryDetailsEntity> deliveryDetailsEntities = criteria.list();
+		return deliveryDetailsEntities.size() > 0 ? deliveryDetailsEntities.get(0) : null;
+	}
+	
+	
+	public DeliveryDetailsEntity getDeliveryDetailsEntity(String deliveryDetailsUUID){
+		Criteria criteria = createCriteria(DeliveryDetailsEntity.class);
+		criteria.add(Restrictions.eq(DeliveryDetailsEntity.DELIVERY_UUID, deliveryDetailsUUID));
+		List<DeliveryDetailsEntity> deliveryDetailsEntities = criteria.list();
+		return deliveryDetailsEntities.size() > 0 ? deliveryDetailsEntities.get(0) : null;
 	}
 
 }

@@ -3,6 +3,7 @@ package com.globalimbx.json;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.globalimbx.entity.DeliveryDetailsEntity;
 import com.globalimbx.entity.OrderEntity;
 import com.globalimbx.enumeration.OrderStatus;
 import com.globalimbx.enumeration.PaymentStatus;
@@ -10,16 +11,20 @@ import com.globalimbx.enumeration.PaymentStatus;
 public class OrderDetailsJson {
 
 	private String orderId;
-	private String orderGuid;
-	private String clientName;
-	private OrderStatus orderStatus;
-	private PaymentStatus paymentStatus;
-	private long orderedDate;
-	private long lastModifiedDate;
-	private long serverTime;
-	private boolean isDeleted;
-	private List<ProductDetails> orderDetails = new ArrayList<ProductDetails>();
-	private List<OrderCreationDetailsJson> orderedItems = new ArrayList<>();
+    private String orderGuid;
+    private String clientName;
+    private OrderStatus orderStatus;
+    private PaymentStatus paymentStatus;
+    private long orderedDate;
+    private long lastModifiedDate;
+    private long serverTime;
+    private boolean isDeleted;
+    private List<OrderCreationDetailsJson> orderedItems = new ArrayList<>();
+    private List<CartonDetailsJson> productDetails = new ArrayList<>();
+    private String cartonCounts;
+    private String createdBy;
+    private DeliveryDetailsEntity deliveryDetailsEntity;
+    private ClientDetailsJson clientDetailsJson;
 
 	public OrderDetailsJson() {
 
@@ -28,13 +33,25 @@ public class OrderDetailsJson {
 	public OrderDetailsJson(OrderEntity orderEntity) {
 		this.orderId = orderEntity.getOrderId();
 		this.orderGuid = orderEntity.getOrderGuid();
-		this.clientName = orderEntity.getClientDetailsEntity().getCompany();
+		this.clientName = orderEntity.getConsignee().getCompany();
 		this.orderStatus = orderEntity.getOrderStatus();
 		this.paymentStatus = orderEntity.getPaymentStatus();
 		this.orderedDate = orderEntity.getOrderedDate();
 		this.lastModifiedDate = orderEntity.getLastModifiedDate();
 		this.serverTime = orderEntity.getServerTime();
 		this.isDeleted = orderEntity.isDeleted();
+		this.cartonCounts = orderEntity.getNoOfCartons();
+		this.createdBy = orderEntity.getOrderCreatedBy() != null ? orderEntity.getOrderCreatedBy().getName() : "admin";
+	}
+	
+	
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
 	public String getOrderId() {
@@ -101,30 +118,12 @@ public class OrderDetailsJson {
 		this.serverTime = serverTime;
 	}
 
-	public List<ProductDetails> getOrderDetails() {
-		return orderDetails;
-	}
-
-	public void setOrderDetails(List<ProductDetails> orderDetails) {
-		this.orderDetails = orderDetails;
-	}
-	
-	
-
 	public boolean isDeleted() {
 		return isDeleted;
 	}
 
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
-	}
-
-	@Override
-	public String toString() {
-		return "OrderDetailsJson [orderId=" + orderId + ", orderGuid=" + orderGuid + ", clientName=" + clientName
-				+ ", orderStatus=" + orderStatus + ", paymentStatus=" + paymentStatus + ", orderedDate=" + orderedDate
-				+ ", lastModifiedDate=" + lastModifiedDate + ", serverTime=" + serverTime + ", orderDetails="
-				+ orderDetails + "]";
 	}
 
 	public List<OrderCreationDetailsJson> getOrderedItems() {
@@ -135,6 +134,51 @@ public class OrderDetailsJson {
 		this.orderedItems = orderedItems;
 	}
 
+	public List<CartonDetailsJson> getProductDetails() {
+		return productDetails;
+	}
+
+	public void setProductDetails(List<CartonDetailsJson> productDetails) {
+		this.productDetails = productDetails;
+	}
+
+	public String getCartonCounts() {
+		return cartonCounts;
+	}
+
+	public void setCartonCounts(String cartonCounts) {
+		this.cartonCounts = cartonCounts;
+	}
+
+	public DeliveryDetailsEntity getDeliveryDetailsEntity() {
+		return deliveryDetailsEntity;
+	}
+
+	public void setDeliveryDetailsEntity(DeliveryDetailsEntity deliveryDetailsEntity) {
+		this.deliveryDetailsEntity = deliveryDetailsEntity;
+	}
+
+	public ClientDetailsJson getClientDetailsJson() {
+		return clientDetailsJson;
+	}
+
+	public void setClientDetailsJson(ClientDetailsJson clientDetailsJson) {
+		this.clientDetailsJson = clientDetailsJson;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderDetailsJson [orderId=" + orderId + ", orderGuid=" + orderGuid + ", clientName=" + clientName
+				+ ", orderStatus=" + orderStatus + ", paymentStatus=" + paymentStatus + ", orderedDate=" + orderedDate
+				+ ", lastModifiedDate=" + lastModifiedDate + ", serverTime=" + serverTime + ", isDeleted=" + isDeleted
+				+ ", orderedItems=" + orderedItems + ", productDetails=" + productDetails + ", cartonCounts="
+				+ cartonCounts + ", createdBy=" + createdBy + ", deliveryDetailsEntity=" + deliveryDetailsEntity
+				+ ", clientDetailsJson=" + clientDetailsJson + "]";
+	}
+
+	
+
+	
 	
 
 }

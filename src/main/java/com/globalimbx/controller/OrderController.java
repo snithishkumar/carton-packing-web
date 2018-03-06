@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.globalimbx.service.OrderService;
 
@@ -17,7 +16,7 @@ public class OrderController {
 	@Autowired
 	private OrderService orderService;
 	
-	@RequestMapping(value = "getOrderList")
+	@RequestMapping(value = "mobile/getOrderList")
 	public ResponseEntity<String> getOrderList(@RequestParam String lastSyncTime){
 		long serverSyncTime = -1;
 		if(lastSyncTime != null){
@@ -26,7 +25,7 @@ public class OrderController {
 		return orderService.getOrderList(serverSyncTime);
 	}
 	
-	@RequestMapping(value = "updateOrderDetails")
+	@RequestMapping(value = "mobile/updateOrderDetails")
 	public ResponseEntity<String> updateOrderDetails(@RequestBody String orderList){
 		return orderService.updateOrderList(orderList);
 	}

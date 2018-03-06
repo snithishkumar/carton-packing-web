@@ -42,9 +42,7 @@ public class OrderEntity {
 	private String orderId;
 	@Column(name = "OrderGuid")
 	private String orderGuid;
-	@ManyToOne
-	@JoinColumn(name = "ClientId", referencedColumnName = "ClientId")
-	private ClientDetailsEntity clientDetailsEntity;
+	
 	@Column(name = "OrderStatus")
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
@@ -59,14 +57,23 @@ public class OrderEntity {
 	private long serverTime;
 	@Column(name = "IsDeleted")
 	private boolean isDeleted;
-	@Column(name = "OrderedItems")
-	@Lob
+	@Column(name = "OrderedItems",columnDefinition="TEXT")
 	private String orderedItems;
-	@Column(name = "ProductDetails")
+	@Column(name = "ProductDetails",columnDefinition="TEXT")
 	private String productDetails;
+	@Column(name = "NoOfCartons")
+	private String noOfCartons;
 	@ManyToOne
 	@JoinColumn(name = "CreatedBy", referencedColumnName = "UserId")
 	private UserDetailsEntity orderCreatedBy;
+	
+	@ManyToOne
+	@JoinColumn(name = "ExporterId", referencedColumnName = "CompanyDetailsId")
+	private CompanyDetailsEntity exporter;
+	
+	@ManyToOne
+	@JoinColumn(name = "consigneeId", referencedColumnName = "ClientId")
+	private ClientDetailsEntity consignee;
 
 	public OrderEntity() {
 
@@ -78,7 +85,7 @@ public class OrderEntity {
 		this.orderId = creationRequestJson.getOrderNumber();
 		this.orderStatus = OrderStatus.ORDERED;
 		this.paymentStatus = PaymentStatus.NOT_PAIED;
-		//this.orderedDate = creationRequestJson.getOrderDate();
+		this.orderedDate = System.currentTimeMillis();
 		this.lastModifiedDate = System.currentTimeMillis();
 		this.serverTime = this.lastModifiedDate;
 		this.isDeleted = false;
@@ -91,6 +98,7 @@ public class OrderEntity {
 		this.lastModifiedDate = orderDetailsJson.getLastModifiedDate();
 		this.serverTime = System.currentTimeMillis();
 		this.isDeleted = orderDetailsJson.isDeleted();
+		this.noOfCartons = orderDetailsJson.getCartonCounts();
 	}
 	
 	
@@ -102,6 +110,17 @@ public class OrderEntity {
 
 	public void setOrderCreatedBy(UserDetailsEntity orderCreatedBy) {
 		this.orderCreatedBy = orderCreatedBy;
+	}
+
+	
+
+	public String getNoOfCartons() {
+		return noOfCartons;
+	}
+
+
+	public void setNoOfCartons(String noOfCartons) {
+		this.noOfCartons = noOfCartons;
 	}
 
 
@@ -137,13 +156,7 @@ public class OrderEntity {
 		this.orderGuid = orderGuid;
 	}
 
-	public ClientDetailsEntity getClientDetailsEntity() {
-		return clientDetailsEntity;
-	}
-
-	public void setClientDetailsEntity(ClientDetailsEntity clientDetailsEntity) {
-		this.clientDetailsEntity = clientDetailsEntity;
-	}
+	
 
 	public OrderStatus getOrderStatus() {
 		return orderStatus;
@@ -202,15 +215,41 @@ public class OrderEntity {
 	public void setProductDetails(String productDetails) {
 		this.productDetails = productDetails;
 	}
+	
+	
+
+	public CompanyDetailsEntity getExporter() {
+		return exporter;
+	}
+
+
+	public void setExporter(CompanyDetailsEntity exporter) {
+		this.exporter = exporter;
+	}
+
+
+	public ClientDetailsEntity getConsignee() {
+		return consignee;
+	}
+
+
+	public void setConsignee(ClientDetailsEntity consignee) {
+		this.consignee = consignee;
+	}
+
 
 	@Override
 	public String toString() {
-		return "OrderEntity [id=" + id + ", orderId=" + orderId + ", orderGuid=" + orderGuid + ", clientDetailsEntity="
-				+ clientDetailsEntity + ", orderStatus=" + orderStatus + ", paymentStatus=" + paymentStatus
-				+ ", orderedDate=" + orderedDate + ", lastModifiedDate=" + lastModifiedDate + ", serverTime="
-				+ serverTime + ", isDeleted=" + isDeleted + ", orderedItems=" + orderedItems + ", productDetails="
-				+ productDetails + "]";
+		return "OrderEntity [id=" + id + ", orderId=" + orderId + ", orderGuid=" + orderGuid + ", orderStatus="
+				+ orderStatus + ", paymentStatus=" + paymentStatus + ", orderedDate=" + orderedDate
+				+ ", lastModifiedDate=" + lastModifiedDate + ", serverTime=" + serverTime + ", isDeleted=" + isDeleted
+				+ ", orderedItems=" + orderedItems + ", productDetails=" + productDetails + ", noOfCartons="
+				+ noOfCartons + ", orderCreatedBy=" + orderCreatedBy + ", exporter=" + exporter + ", consignee="
+				+ consignee + "]";
 	}
+
+
+	
 
 	
 
