@@ -86,7 +86,7 @@ public class OrderService {
 				orderDetailsJson.setDeliveryDetailsEntity(deliveryDetailsEntity);
 				ClientDetailsJson clientDetailsJson = new ClientDetailsJson();
 				loadClientDetails(orderEntity, clientDetailsJson);
-				orderDetailsJson.setClientDetailsJson(clientDetailsJson);
+				orderDetailsJson.setClientDetails(clientDetailsJson);
 				
 				orderDetailsJsonsList.add(orderDetailsJson);
 			}
@@ -501,12 +501,12 @@ public class OrderService {
 	
 	
 	private String getOrderId(){
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddmmyyHHmm");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddHHmm");
 		Calendar calendar = Calendar.getInstance(Locale.getDefault());
 		Date date = new Date(calendar.getTimeInMillis());
 		Random random = new Random();
 		int ran = random.nextInt(99);
-		return simpleDateFormat.format(date)+"_"+ran;
+		return "CAR"+simpleDateFormat.format(date)+"_"+ran;
 	
 	}
 	

@@ -24,7 +24,7 @@ public class OrderDetailsJson {
     private String cartonCounts;
     private String createdBy;
     private DeliveryDetailsEntity deliveryDetailsEntity;
-    private ClientDetailsJson clientDetailsJson;
+    private ClientDetailsJson clientDetails;
 
 	public OrderDetailsJson() {
 
@@ -158,12 +158,12 @@ public class OrderDetailsJson {
 		this.deliveryDetailsEntity = deliveryDetailsEntity;
 	}
 
-	public ClientDetailsJson getClientDetailsJson() {
-		return clientDetailsJson;
+	public ClientDetailsJson getClientDetails() {
+		return clientDetails;
 	}
 
-	public void setClientDetailsJson(ClientDetailsJson clientDetailsJson) {
-		this.clientDetailsJson = clientDetailsJson;
+	public void setClientDetails(ClientDetailsJson clientDetails) {
+		this.clientDetails = clientDetails;
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class OrderDetailsJson {
 				+ ", lastModifiedDate=" + lastModifiedDate + ", serverTime=" + serverTime + ", isDeleted=" + isDeleted
 				+ ", orderedItems=" + orderedItems + ", productDetails=" + productDetails + ", cartonCounts="
 				+ cartonCounts + ", createdBy=" + createdBy + ", deliveryDetailsEntity=" + deliveryDetailsEntity
-				+ ", clientDetailsJson=" + clientDetailsJson + "]";
+				+ ", clientDetailsJson=" + clientDetails + "]";
 	}
 
 	
