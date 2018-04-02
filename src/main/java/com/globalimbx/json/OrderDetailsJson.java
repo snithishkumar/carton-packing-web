@@ -23,7 +23,7 @@ public class OrderDetailsJson {
     private List<CartonDetailsJson> productDetails = new ArrayList<>();
     private String cartonCounts;
     private String createdBy;
-    private DeliveryDetailsEntity deliveryDetailsEntity;
+    private List<DeliveryDetailsEntity> deliveryDetailsList = new ArrayList<>();
     private ClientDetailsJson clientDetails;
 
 	public OrderDetailsJson() {
@@ -150,13 +150,7 @@ public class OrderDetailsJson {
 		this.cartonCounts = cartonCounts;
 	}
 
-	public DeliveryDetailsEntity getDeliveryDetailsEntity() {
-		return deliveryDetailsEntity;
-	}
-
-	public void setDeliveryDetailsEntity(DeliveryDetailsEntity deliveryDetailsEntity) {
-		this.deliveryDetailsEntity = deliveryDetailsEntity;
-	}
+	
 
 	public ClientDetailsJson getClientDetails() {
 		return clientDetails;
@@ -166,19 +160,23 @@ public class OrderDetailsJson {
 		this.clientDetails = clientDetails;
 	}
 
+	public List<DeliveryDetailsEntity> getDeliveryDetailsList() {
+		return deliveryDetailsList;
+	}
+
+	public void setDeliveryDetailsList(List<DeliveryDetailsEntity> deliveryDetailsList) {
+		this.deliveryDetailsList = deliveryDetailsList;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDetailsJson [orderId=" + orderId + ", orderGuid=" + orderGuid + ", clientName=" + clientName
 				+ ", orderStatus=" + orderStatus + ", paymentStatus=" + paymentStatus + ", orderedDate=" + orderedDate
 				+ ", lastModifiedDate=" + lastModifiedDate + ", serverTime=" + serverTime + ", isDeleted=" + isDeleted
 				+ ", orderedItems=" + orderedItems + ", productDetails=" + productDetails + ", cartonCounts="
-				+ cartonCounts + ", createdBy=" + createdBy + ", deliveryDetailsEntity=" + deliveryDetailsEntity
-				+ ", clientDetailsJson=" + clientDetails + "]";
+				+ cartonCounts + ", createdBy=" + createdBy + ", deliveryDetailsList=" + deliveryDetailsList
+				+ ", clientDetails=" + clientDetails + "]";
 	}
 
-	
-
-	
-	
 
 }

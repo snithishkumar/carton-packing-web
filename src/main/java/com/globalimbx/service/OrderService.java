@@ -78,12 +78,13 @@ public class OrderService {
 					List<CartonDetailsJson> productDetailsItems = gson.fromJson(productDetailsJson, listType);
 					orderDetailsJson.setProductDetails(productDetailsItems);
 				}
-				DeliveryDetailsEntity deliveryDetailsEntity = orderDao.getDeliveryDetailsEntity(orderEntity);
-				if(deliveryDetailsEntity != null){
+				List<DeliveryDetailsEntity> deliveryDetailsEntityList = orderDao.getDeliveryDetailsEntity(orderEntity);
+				for(DeliveryDetailsEntity deliveryDetailsEntity : deliveryDetailsEntityList){
 					deliveryDetailsEntity.setOrderEntity(null);
+					orderDetailsJson.getDeliveryDetailsList().add(deliveryDetailsEntity);
 				}
 				
-				orderDetailsJson.setDeliveryDetailsEntity(deliveryDetailsEntity);
+				
 				ClientDetailsJson clientDetailsJson = new ClientDetailsJson();
 				loadClientDetails(orderEntity, clientDetailsJson);
 				orderDetailsJson.setClientDetails(clientDetailsJson);
@@ -108,11 +109,11 @@ public class OrderService {
 		clientDetailsJson.setClientDetailsUUID(clientDetailsEntity.getClientGuid());
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(clientDetailsEntity.getCompany());
-		stringBuilder.append(",/n");
+		stringBuilder.append(",\n");
 		stringBuilder.append(clientDetailsEntity.getAddress1());
-		stringBuilder.append(",/n");
+		stringBuilder.append(",\n");
 		stringBuilder.append(clientDetailsEntity.getAddress2());
-		stringBuilder.append(",/n");
+		stringBuilder.append(",\n");
 		stringBuilder.append(clientDetailsEntity.getCountry());
 		clientDetailsJson.setConsigneeDetails(stringBuilder.toString());
 		clientDetailsJson.setTinNumber(clientDetailsEntity.getTinNumber());
@@ -122,11 +123,11 @@ public class OrderService {
 		
 		stringBuilder = new StringBuilder();
 		stringBuilder.append(companyDetailsEntity.getCompanyName());
-		stringBuilder.append(",/n");
+		stringBuilder.append(",\n");
 		stringBuilder.append(companyDetailsEntity.getAddress1());
-		stringBuilder.append(",/n");
+		stringBuilder.append(",\n");
 		stringBuilder.append(companyDetailsEntity.getAddress2());
-		stringBuilder.append(",/n");
+		stringBuilder.append(",\n");
 		stringBuilder.append(companyDetailsEntity.getCountry());
 		clientDetailsJson.setExporterDetails(stringBuilder.toString());
 		clientDetailsJson.setExporterRef(companyDetailsEntity.getContactAuthority());
@@ -149,15 +150,14 @@ public class OrderService {
 					orderDao.updateOrderEntity(orderEntity);
 					response.add(orderEntity.getOrderGuid());
 					
-					DeliveryDetailsEntity deliveryDetailsEntity = orderDetailsJson.getDeliveryDetailsEntity();
-					if(deliveryDetailsEntity != null){
+					List<DeliveryDetailsEntity> deliveryDetailsEntityList = orderDetailsJson.getDeliveryDetailsList();
+					for(DeliveryDetailsEntity deliveryDetailsEntity : deliveryDetailsEntityList){
 						DeliveryDetailsEntity dbDeliveryDetailsEntity =	orderDao.getDeliveryDetailsEntity(deliveryDetailsEntity.getDeliveryUUID());
 						if(dbDeliveryDetailsEntity == null){
 							deliveryDetailsEntity.setOrderEntity(orderEntity);
 							orderDao.createDeliveryDetailsEntity(deliveryDetailsEntity);
 						}
 					}
-					
 					// Update
 				}else{
 					//Save
@@ -443,7 +443,7 @@ public class OrderService {
 			for(OrderCreationDetailsJson creationDetailsJson : orderDetails){
 				ProductDetailsEntity productDetailsEntity = orderDao.getProductDetails(creationDetailsJson.getProductStyleGuid());
 				creationDetailsJson.setProductStyle(productDetailsEntity.getProductName());
-				creationDetailsJson.setUnitPrice(creationDetailsJson.getUnitPrice());
+				creationDetailsJson.setUnitPrice(productDetailsEntity.getUnitPrice());
 				creationDetailsJson.setOrderItemGuid(UUID.randomUUID().toString());
 			}
 			CompanyDetailsEntity companyDetailsEntity = userDao.getCompanyDetailsEntity(orderCreationRequestJson.getExporter());

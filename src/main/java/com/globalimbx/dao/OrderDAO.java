@@ -202,11 +202,11 @@ public class OrderDAO extends BaseDAO{
 	}
 	
 	
-	public DeliveryDetailsEntity getDeliveryDetailsEntity(OrderEntity orderEntity){
+	public List<DeliveryDetailsEntity> getDeliveryDetailsEntity(OrderEntity orderEntity){
 		Criteria criteria = createCriteria(DeliveryDetailsEntity.class);
 		criteria.add(Restrictions.eq(DeliveryDetailsEntity.ORDER_ID, orderEntity));
 		List<DeliveryDetailsEntity> deliveryDetailsEntities = criteria.list();
-		return deliveryDetailsEntities.size() > 0 ? deliveryDetailsEntities.get(0) : null;
+		return deliveryDetailsEntities;
 	}
 	
 	

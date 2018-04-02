@@ -25,6 +25,9 @@ public class DeliveryDetailsEntity {
     private int deliveryDetailsId;
     @Column(name = "DeliveryUUID")
     private String deliveryUUID;
+    
+    @Column(name = "DeliveryID")
+    private String deliveryId;
     @Column(name = "DeliveringType")
     private DeliveringType deliveringType;
     @Column(name = "PlaceOfLoading")
@@ -37,8 +40,17 @@ public class DeliveryDetailsEntity {
     @ManyToOne
 	@JoinColumn(name = "OrderId", referencedColumnName = "Id")
     private OrderEntity orderEntity;
+    
 
-    public String getDeliveryUUID() {
+    public String getDeliveryId() {
+		return deliveryId;
+	}
+
+	public void setDeliveryId(String deliveryId) {
+		this.deliveryId = deliveryId;
+	}
+
+	public String getDeliveryUUID() {
         return deliveryUUID;
     }
 
