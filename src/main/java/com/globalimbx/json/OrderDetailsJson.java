@@ -3,7 +3,6 @@ package com.globalimbx.json;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.globalimbx.entity.DeliveryDetailsEntity;
 import com.globalimbx.entity.OrderEntity;
 import com.globalimbx.enumeration.OrderStatus;
 import com.globalimbx.enumeration.PaymentStatus;
@@ -23,7 +22,6 @@ public class OrderDetailsJson {
     private List<CartonDetailsJson> productDetails = new ArrayList<>();
     private String cartonCounts;
     private String createdBy;
-    private List<DeliveryDetailsEntity> deliveryDetailsList = new ArrayList<>();
     private ClientDetailsJson clientDetails;
 
 	public OrderDetailsJson() {
@@ -160,23 +158,24 @@ public class OrderDetailsJson {
 		this.clientDetails = clientDetails;
 	}
 
-	public List<DeliveryDetailsEntity> getDeliveryDetailsList() {
-		return deliveryDetailsList;
-	}
-
-	public void setDeliveryDetailsList(List<DeliveryDetailsEntity> deliveryDetailsList) {
-		this.deliveryDetailsList = deliveryDetailsList;
-	}
 
 	@Override
 	public String toString() {
-		return "OrderDetailsJson [orderId=" + orderId + ", orderGuid=" + orderGuid + ", clientName=" + clientName
-				+ ", orderStatus=" + orderStatus + ", paymentStatus=" + paymentStatus + ", orderedDate=" + orderedDate
-				+ ", lastModifiedDate=" + lastModifiedDate + ", serverTime=" + serverTime + ", isDeleted=" + isDeleted
-				+ ", orderedItems=" + orderedItems + ", productDetails=" + productDetails + ", cartonCounts="
-				+ cartonCounts + ", createdBy=" + createdBy + ", deliveryDetailsList=" + deliveryDetailsList
-				+ ", clientDetails=" + clientDetails + "]";
+		return "OrderDetailsJson{" +
+				"orderId='" + orderId + '\'' +
+				", orderGuid='" + orderGuid + '\'' +
+				", clientName='" + clientName + '\'' +
+				", orderStatus=" + orderStatus +
+				", paymentStatus=" + paymentStatus +
+				", orderedDate=" + orderedDate +
+				", lastModifiedDate=" + lastModifiedDate +
+				", serverTime=" + serverTime +
+				", isDeleted=" + isDeleted +
+				", orderedItems=" + orderedItems +
+				", productDetails=" + productDetails +
+				", cartonCounts='" + cartonCounts + '\'' +
+				", createdBy='" + createdBy + '\'' +
+				", clientDetails=" + clientDetails +
+				'}';
 	}
-
-
 }

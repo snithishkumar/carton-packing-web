@@ -208,7 +208,14 @@ public class OrderDAO extends BaseDAO{
 		List<DeliveryDetailsEntity> deliveryDetailsEntities = criteria.list();
 		return deliveryDetailsEntities;
 	}
-	
+
+
+
+	public List<DeliveryDetailsEntity> getDeliveryDetailsEntity(){
+		Criteria criteria = createCriteria(DeliveryDetailsEntity.class);
+		List<DeliveryDetailsEntity> deliveryDetailsEntities = criteria.list();
+		return deliveryDetailsEntities;
+	}
 	
 	public DeliveryDetailsEntity getDeliveryDetailsEntity(String deliveryDetailsUUID){
 		Criteria criteria = createCriteria(DeliveryDetailsEntity.class);

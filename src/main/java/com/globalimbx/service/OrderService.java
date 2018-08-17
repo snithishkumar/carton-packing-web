@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
+import com.globalimbx.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,18 +29,6 @@ import com.globalimbx.entity.ProductColorEntity;
 import com.globalimbx.entity.ProductDetailsEntity;
 import com.globalimbx.entity.ProductGroupEntity;
 import com.globalimbx.entity.UserDetailsEntity;
-import com.globalimbx.json.CartonDetailsJson;
-import com.globalimbx.json.ClientDetailsJson;
-import com.globalimbx.json.CompanyDetailsJson;
-import com.globalimbx.json.OrderCreationDetailsJson;
-import com.globalimbx.json.OrderCreationDetailsRequestJson;
-import com.globalimbx.json.OrderCreationRequestJson;
-import com.globalimbx.json.OrderDetailsJson;
-import com.globalimbx.json.ProductCategoryJson;
-import com.globalimbx.json.ProductColorJson;
-import com.globalimbx.json.ProductDetails;
-import com.globalimbx.json.ProductGroupJson;
-import com.globalimbx.json.ResponseData;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -61,9 +50,10 @@ public class OrderService {
 	
 	@Transactional(readOnly= true,propagation=Propagation.REQUIRED)
 	public ResponseEntity<String> getOrderList(long serverSyncTime){
-		List<OrderDetailsJson> orderDetailsJsonsList = new ArrayList<OrderDetailsJson>();
 		try{
+            ServerSyncModel serverSyncModel = new ServerSyncModel();
 			List<OrderEntity> orderEntities = orderDao.getOrderList(serverSyncTime);
+            List<DeliveryDetailsEntity> deliveryDetailsEntityList = orderDao.getDeliveryDetailsEntity();
 			for(OrderEntity orderEntity : orderEntities){
 				OrderDetailsJson orderDetailsJson = new OrderDetailsJson(orderEntity);
 				String orderItemsJson = orderEntity.getOrderedItems();
@@ -78,23 +68,19 @@ public class OrderService {
 					List<CartonDetailsJson> productDetailsItems = gson.fromJson(productDetailsJson, listType);
 					orderDetailsJson.setProductDetails(productDetailsItems);
 				}
-				List<DeliveryDetailsEntity> deliveryDetailsEntityList = orderDao.getDeliveryDetailsEntity(orderEntity);
-				for(DeliveryDetailsEntity deliveryDetailsEntity : deliveryDetailsEntityList){
-					deliveryDetailsEntity.setOrderEntity(null);
-					orderDetailsJson.getDeliveryDetailsList().add(deliveryDetailsEntity);
-				}
-				
-				
+
 				ClientDetailsJson clientDetailsJson = new ClientDetailsJson();
 				loadClientDetails(orderEntity, clientDetailsJson);
 				orderDetailsJson.setClientDetails(clientDetailsJson);
-				
-				orderDetailsJsonsList.add(orderDetailsJson);
+
+                serverSyncModel.getOrderDetailsJsonList().add(orderDetailsJson);
 			}
+
+            serverSyncModel.getDeliveryDetailsEntities().addAll(deliveryDetailsEntityList);
 			
 			ResponseData responseData = new ResponseData();
 			responseData.setStatusCode(200);
-			responseData.setData(orderDetailsJsonsList);
+			responseData.setData(serverSyncModel);
 			String data = gson.toJson(responseData);
 			return new ResponseEntity<String>(data, HttpStatus.OK);
 		}catch(Exception e){
@@ -134,41 +120,68 @@ public class OrderService {
 	}
 	
 	@Transactional(readOnly= false,propagation=Propagation.REQUIRED)
-	public ResponseEntity<String> updateOrderList(String orderDetails){
-		try{
-			JsonArray response = new JsonArray();
-			Type listType = new TypeToken<ArrayList<OrderDetailsJson>>() {
-			}.getType();
-			List<OrderDetailsJson> orderDetailsJsonsList =  gson.fromJson(orderDetails, listType);
-			for(OrderDetailsJson orderDetailsJson : orderDetailsJsonsList){
-				OrderEntity orderEntity = orderDao.getOrderEntity(orderDetailsJson.getOrderGuid());
-				if(orderEntity != null){
-					orderEntity.copyBeanValue(orderDetailsJson);
-					List<CartonDetailsJson> productList =	orderDetailsJson.getProductDetails();
-					String productDetailsJson = gson.toJson(productList);
-					orderEntity.setProductDetails(productDetailsJson);
-					orderDao.updateOrderEntity(orderEntity);
-					response.add(orderEntity.getOrderGuid());
-					
-					List<DeliveryDetailsEntity> deliveryDetailsEntityList = orderDetailsJson.getDeliveryDetailsList();
-					for(DeliveryDetailsEntity deliveryDetailsEntity : deliveryDetailsEntityList){
-						DeliveryDetailsEntity dbDeliveryDetailsEntity =	orderDao.getDeliveryDetailsEntity(deliveryDetailsEntity.getDeliveryUUID());
-						if(dbDeliveryDetailsEntity == null){
-							deliveryDetailsEntity.setOrderEntity(orderEntity);
-							orderDao.createDeliveryDetailsEntity(deliveryDetailsEntity);
-						}
-					}
-					// Update
-				}else{
-					//Save
-				}
-			}
-			return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return new ResponseEntity<String>("Internal Server Error.", HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+    public ResponseEntity<String> updateOrderList(String orderDetails) {
+        ServerSyncModel serverSyncModel = gson.fromJson(orderDetails,ServerSyncModel.class);
+	    try {
+            try{
+                List<OrderDetailsJson> orderDetailsJsonsList = serverSyncModel.getOrderDetailsJsonList();
+                for (OrderDetailsJson orderDetailsJson : orderDetailsJsonsList) {
+                    try{
+                        OrderEntity orderEntity = orderDao.getOrderEntity(orderDetailsJson.getOrderGuid());
+                        if (orderEntity != null) {
+                            orderEntity.copyBeanValue(orderDetailsJson);
+                            List<CartonDetailsJson> productList = orderDetailsJson.getProductDetails();
+                            String productDetailsJson = gson.toJson(productList);
+                            orderEntity.setProductDetails(productDetailsJson);
+                            orderDao.updateOrderEntity(orderEntity);
+                            ProcessedDetails processedDetails = new ProcessedDetails();
+                            processedDetails.setUuid(orderEntity.getOrderGuid());
+                            processedDetails.setDateTime(orderDetailsJson.getLastModifiedDate());
+                            serverSyncModel.getOrderGuids().add(processedDetails);
+                            // Update
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+            List<DeliveryDetailsEntity> deliveryDetailsEntityList = serverSyncModel.getDeliveryDetailsEntities();
+            for (DeliveryDetailsEntity deliveryDetailsEntity : deliveryDetailsEntityList) {
+                try{
+                    DeliveryDetailsEntity dbDeliveryDetailsEntity = orderDao.getDeliveryDetailsEntity(deliveryDetailsEntity.getDeliveryUUID());
+                    if (dbDeliveryDetailsEntity == null) {
+                        deliveryDetailsEntity.setServerSyncTime(System.currentTimeMillis());
+                        orderDao.createDeliveryDetailsEntity(deliveryDetailsEntity);
+                    } else {
+                        String orderGuids = dbDeliveryDetailsEntity.getOrderGuids();
+                        JsonArray dbOrderGuids = (JsonArray) jsonParser.parse(orderGuids);
+                        dbDeliveryDetailsEntity.setServerSyncTime(System.currentTimeMillis());
+                        dbDeliveryDetailsEntity.setLastModifiedDateTime(deliveryDetailsEntity.getLastModifiedDateTime());
+                        JsonArray mobileOrderGuids = (JsonArray) jsonParser.parse(deliveryDetailsEntity.getOrderGuids());
+                        mobileOrderGuids.addAll(dbOrderGuids);
+                        dbDeliveryDetailsEntity.setOrderGuids(mobileOrderGuids.toString());
+
+                        ProcessedDetails processedDetails = new ProcessedDetails();
+                        processedDetails.setUuid(dbDeliveryDetailsEntity.getDeliveryUUID());
+                        processedDetails.setDateTime(deliveryDetailsEntity.getLastModifiedDateTime());
+                        serverSyncModel.getDeliveryGuids().add(processedDetails);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<String>(gson.toJson(serverSyncModel), HttpStatus.OK);
+    }
 	
 	@Transactional(readOnly = false,propagation = Propagation.REQUIRED)
 	public ResponseEntity<String> addPoductGroup(String rawData){

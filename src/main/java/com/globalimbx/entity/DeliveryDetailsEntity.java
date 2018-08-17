@@ -1,15 +1,9 @@
 package com.globalimbx.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.globalimbx.enumeration.DeliveringType;
+import com.globalimbx.enumeration.Status;
 
 @Entity
 @Table(name = "DeliveryDetails")
@@ -37,10 +31,50 @@ public class DeliveryDetailsEntity {
     @Column(name = "PortOfDischarge")
     private String portOfDischarge;
 
-    @ManyToOne
-	@JoinColumn(name = "OrderId", referencedColumnName = "Id")
-    private OrderEntity orderEntity;
-    
+    @Column(name = "OrderGuids",columnDefinition="TEXT")
+    private String orderGuids;
+
+    @Column(name = "LastModifiedDateTime")
+    private long lastModifiedDateTime;
+
+    @Column(name = "Status")
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Column(name = "ServerSyncTime")
+    private long serverSyncTime;
+
+    public long getServerSyncTime() {
+        return serverSyncTime;
+    }
+
+    public void setServerSyncTime(long serverSyncTime) {
+        this.serverSyncTime = serverSyncTime;
+    }
+
+    public long getLastModifiedDateTime() {
+        return lastModifiedDateTime;
+    }
+
+    public void setLastModifiedDateTime(long lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public String getOrderGuids() {
+        return orderGuids;
+    }
+
+    public void setOrderGuids(String orderGuids) {
+        this.orderGuids = orderGuids;
+    }
 
     public String getDeliveryId() {
 		return deliveryId;
@@ -98,25 +132,20 @@ public class DeliveryDetailsEntity {
         this.portOfDischarge = portOfDischarge;
     }
 
-    public OrderEntity getOrderEntity() {
-        return orderEntity;
-    }
-
-    public void setOrderEntity(OrderEntity orderEntity) {
-        this.orderEntity = orderEntity;
-    }
-
     @Override
     public String toString() {
         return "DeliveryDetailsEntity{" +
                 "deliveryDetailsId=" + deliveryDetailsId +
                 ", deliveryUUID='" + deliveryUUID + '\'' +
+                ", deliveryId='" + deliveryId + '\'' +
                 ", deliveringType=" + deliveringType +
                 ", placeOfLoading='" + placeOfLoading + '\'' +
                 ", placeOfDelivery='" + placeOfDelivery + '\'' +
                 ", portOfDischarge='" + portOfDischarge + '\'' +
-                ", orderEntity=" + orderEntity +
+                ", orderGuids='" + orderGuids + '\'' +
+                ", lastModifiedDateTime=" + lastModifiedDateTime +
+                ", status=" + status +
+                ", serverSyncTime=" + serverSyncTime +
                 '}';
     }
-
 }
