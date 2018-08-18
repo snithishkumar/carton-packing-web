@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
+import com.globalimbx.enumeration.Status;
 import com.globalimbx.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -131,6 +132,11 @@ public class OrderService {
                     if (dbDeliveryDetailsEntity == null) {
                         deliveryDetailsEntity.setServerSyncTime(System.currentTimeMillis());
                         orderDao.createDeliveryDetailsEntity(deliveryDetailsEntity);
+                    }else if(deliveryDetailsEntity.getStatus() != null){
+                        if(dbDeliveryDetailsEntity.getStatus() == null || dbDeliveryDetailsEntity.getStatus().toString().equals(Status.IN_PROGRESS.toString())){
+                            dbDeliveryDetailsEntity.setStatus(deliveryDetailsEntity.getStatus());
+                            orderDao.updateDeliveryDetailsEntity(dbDeliveryDetailsEntity);
+                        }
                     }
                 }catch (Exception e){
                     e.printStackTrace();
