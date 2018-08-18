@@ -123,6 +123,22 @@ public class OrderService {
     public ResponseEntity<String> updateOrderList(String orderDetails) {
         ServerSyncModel serverSyncModel = gson.fromJson(orderDetails,ServerSyncModel.class);
 	    try {
+
+            List<DeliveryDetailsEntity> deliveryDetailsEntityList = serverSyncModel.getDeliveryDetailsEntities();
+            for (DeliveryDetailsEntity deliveryDetailsEntity : deliveryDetailsEntityList) {
+                try{
+                    DeliveryDetailsEntity dbDeliveryDetailsEntity = orderDao.getDeliveryDetailsEntity(deliveryDetailsEntity.getDeliveryUUID());
+                    if (dbDeliveryDetailsEntity == null) {
+                        deliveryDetailsEntity.setServerSyncTime(System.currentTimeMillis());
+                        orderDao.createDeliveryDetailsEntity(deliveryDetailsEntity);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+            Type orderGuidsType = new TypeToken<ArrayList<String>>() {
+            }.getType();
             try{
                 List<OrderDetailsJson> orderDetailsJsonsList = serverSyncModel.getOrderDetailsJsonList();
                 for (OrderDetailsJson orderDetailsJson : orderDetailsJsonsList) {
@@ -130,9 +146,64 @@ public class OrderService {
                         OrderEntity orderEntity = orderDao.getOrderEntity(orderDetailsJson.getOrderGuid());
                         if (orderEntity != null) {
                             orderEntity.copyBeanValue(orderDetailsJson);
+							String dbProductDetails = orderEntity.getProductDetails();
+
                             List<CartonDetailsJson> productList = orderDetailsJson.getProductDetails();
-                            String productDetailsJson = gson.toJson(productList);
-                            orderEntity.setProductDetails(productDetailsJson);
+
+							if(dbProductDetails != null){
+                                Type listType = new TypeToken<ArrayList<CartonDetailsJson>>() {
+                                }.getType();
+                                List<CartonDetailsJson> dbProductList = gson.fromJson(dbProductDetails,listType);
+                                for(CartonDetailsJson cartonDetailsJson : productList){
+                                    if(cartonDetailsJson.getDeliverDetailsGuid() != null){
+                                        DeliveryDetailsEntity dbDeliveryDetailsEntity = orderDao.getDeliveryDetailsEntity(cartonDetailsJson.getDeliverDetailsGuid());
+                                        String orderGuids =  dbDeliveryDetailsEntity.getOrderGuids();
+                                        if(orderGuids != null){
+                                            List<String> orderGuidList = gson.fromJson(orderGuids,orderGuidsType);
+                                            if(!orderGuidList.contains(orderEntity.getOrderGuid())){
+                                                orderGuidList.add(orderEntity.getOrderGuid());
+                                                dbDeliveryDetailsEntity.setLastModifiedDateTime(System.currentTimeMillis());
+                                                dbDeliveryDetailsEntity.setServerSyncTime(System.currentTimeMillis());
+                                                dbDeliveryDetailsEntity.setOrderGuids(gson.toJson(orderGuidList));
+                                                orderDao.updateDeliveryDetailsEntity(dbDeliveryDetailsEntity);
+                                            }
+                                        }else{
+                                            List<String> orderGuidList = new ArrayList<>();
+                                            orderGuidList.add(orderEntity.getOrderGuid());
+                                            dbDeliveryDetailsEntity.setLastModifiedDateTime(System.currentTimeMillis());
+                                            dbDeliveryDetailsEntity.setServerSyncTime(System.currentTimeMillis());
+                                            dbDeliveryDetailsEntity.setOrderGuids(gson.toJson(orderGuidList));
+                                            orderDao.updateDeliveryDetailsEntity(dbDeliveryDetailsEntity);
+                                        }
+
+                                    }
+
+                                    int pos = dbProductList.indexOf(cartonDetailsJson);
+                                    if(pos != -1){
+                                        CartonDetailsJson  dbCartonDetailsJson = dbProductList.get(pos);
+                                        if(dbCartonDetailsJson.getDeliverDetailsGuid() == null){
+                                            dbCartonDetailsJson.setDeliverDetailsGuid(cartonDetailsJson.getDeliverDetailsGuid());
+                                        }
+                                        if(dbCartonDetailsJson.getLastModifiedTime() < cartonDetailsJson.getLastModifiedTime()){
+                                            dbCartonDetailsJson.setLastModifiedTime(cartonDetailsJson.getLastModifiedTime());
+                                            dbCartonDetailsJson.setLastModifiedBy(cartonDetailsJson.getLastModifiedBy());
+                                        }
+
+                                        if(dbCartonDetailsJson.getTotalWeight() == null){
+                                            dbCartonDetailsJson.setTotalWeight(cartonDetailsJson.getTotalWeight());
+                                        }
+                                        dbCartonDetailsJson.getProductDetailsJsonList().addAll(cartonDetailsJson.getProductDetailsJsonList());
+
+                                    }else{
+                                        dbProductList.add(cartonDetailsJson);
+                                    }
+                                }
+                                orderEntity.setProductDetails(gson.toJson(dbProductList));
+                            }else{
+                                orderEntity.setProductDetails(gson.toJson(productList));
+                            }
+
+
                             orderDao.updateOrderEntity(orderEntity);
                             ProcessedDetails processedDetails = new ProcessedDetails();
                             processedDetails.setUuid(orderEntity.getOrderGuid());
@@ -150,32 +221,7 @@ public class OrderService {
             }
 
 
-            List<DeliveryDetailsEntity> deliveryDetailsEntityList = serverSyncModel.getDeliveryDetailsEntities();
-            for (DeliveryDetailsEntity deliveryDetailsEntity : deliveryDetailsEntityList) {
-                try{
-                    DeliveryDetailsEntity dbDeliveryDetailsEntity = orderDao.getDeliveryDetailsEntity(deliveryDetailsEntity.getDeliveryUUID());
-                    if (dbDeliveryDetailsEntity == null) {
-                        deliveryDetailsEntity.setServerSyncTime(System.currentTimeMillis());
-                        orderDao.createDeliveryDetailsEntity(deliveryDetailsEntity);
-                    } else {
-                        String orderGuids = dbDeliveryDetailsEntity.getOrderGuids();
-                        JsonArray dbOrderGuids = (JsonArray) jsonParser.parse(orderGuids);
-                        dbDeliveryDetailsEntity.setServerSyncTime(System.currentTimeMillis());
-                        dbDeliveryDetailsEntity.setLastModifiedDateTime(deliveryDetailsEntity.getLastModifiedDateTime());
-                        JsonArray mobileOrderGuids = (JsonArray) jsonParser.parse(deliveryDetailsEntity.getOrderGuids());
-                        mobileOrderGuids.addAll(dbOrderGuids);
-                        dbDeliveryDetailsEntity.setOrderGuids(mobileOrderGuids.toString());
 
-                        ProcessedDetails processedDetails = new ProcessedDetails();
-                        processedDetails.setUuid(dbDeliveryDetailsEntity.getDeliveryUUID());
-                        processedDetails.setDateTime(deliveryDetailsEntity.getLastModifiedDateTime());
-                        serverSyncModel.getDeliveryGuids().add(processedDetails);
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
-            }
 
         } catch (Exception e) {
             e.printStackTrace();

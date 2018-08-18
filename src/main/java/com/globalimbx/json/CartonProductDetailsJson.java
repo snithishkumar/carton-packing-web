@@ -1,8 +1,10 @@
 package com.globalimbx.json;
 
+import java.util.Objects;
+
 public class CartonProductDetailsJson {
 	
-	 private String productGroup;
+	    private String productGroup;
 	    private String productGuid;
 	    private String productCategory;
 	    private String productStyle;
@@ -156,7 +158,20 @@ public class CartonProductDetailsJson {
 	        this.lastModifiedDateTime = lastModifiedDateTime;
 	    }
 
-	    @Override
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CartonProductDetailsJson that = (CartonProductDetailsJson) o;
+		return Objects.equals(productGuid, that.productGuid);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(productGuid);
+	}
+
+	@Override
 	    public String toString() {
 	        return "ProductDetailsJson{" +
 	                "productGroup='" + productGroup + '\'' +

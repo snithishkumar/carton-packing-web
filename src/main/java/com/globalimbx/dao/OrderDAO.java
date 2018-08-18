@@ -200,6 +200,11 @@ public class OrderDAO extends BaseDAO{
 	public void createDeliveryDetailsEntity(DeliveryDetailsEntity deliveryDetailsEntity){
 		saveObject(deliveryDetailsEntity);
 	}
+
+
+	public void updateDeliveryDetailsEntity(DeliveryDetailsEntity deliveryDetailsEntity){
+		updateObject(deliveryDetailsEntity);
+	}
 	
 	
 	public List<DeliveryDetailsEntity> getDeliveryDetailsEntity(OrderEntity orderEntity){

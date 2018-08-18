@@ -1,7 +1,6 @@
 package com.globalimbx.json;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CartonDetailsJson {
 	
@@ -12,14 +11,22 @@ public class CartonDetailsJson {
     private String createdBy;
     private String lastModifiedBy;
     private String totalWeight;
-    private List<CartonProductDetailsJson> productDetailsJsonList = new ArrayList<>();
+	private String deliverDetailsGuid;
+    private Set<CartonProductDetailsJson> productDetailsJsonList = new HashSet<>();
 	public String getCartonGuid() {
 		return cartonGuid;
 	}
-	
-	
-	
-	public String getTotalWeight() {
+
+
+    public String getDeliverDetailsGuid() {
+        return deliverDetailsGuid;
+    }
+
+    public void setDeliverDetailsGuid(String deliverDetailsGuid) {
+        this.deliverDetailsGuid = deliverDetailsGuid;
+    }
+
+    public String getTotalWeight() {
 		return totalWeight;
 	}
 
@@ -64,19 +71,32 @@ public class CartonDetailsJson {
 	public void setLastModifiedBy(String lastModifiedBy) {
 		this.lastModifiedBy = lastModifiedBy;
 	}
-	public List<CartonProductDetailsJson> getProductDetailsJsonList() {
+
+	public Set<CartonProductDetailsJson> getProductDetailsJsonList() {
 		return productDetailsJsonList;
 	}
-	public void setProductDetailsJsonList(List<CartonProductDetailsJson> productDetailsJsonList) {
+
+	public void setProductDetailsJsonList(Set<CartonProductDetailsJson> productDetailsJsonList) {
 		this.productDetailsJsonList = productDetailsJsonList;
 	}
+
 	@Override
 	public String toString() {
 		return "CartonDetailsJson [cartonGuid=" + cartonGuid + ", cartonNumber=" + cartonNumber + ", createdDateTime="
 				+ createdDateTime + ", lastModifiedTime=" + lastModifiedTime + ", createdBy=" + createdBy
 				+ ", lastModifiedBy=" + lastModifiedBy + ", productDetailsJsonList=" + productDetailsJsonList + "]";
 	}
-    
-    
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CartonDetailsJson that = (CartonDetailsJson) o;
+		return Objects.equals(cartonGuid, that.cartonGuid);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(cartonGuid);
+	}
 }

@@ -75,6 +75,9 @@ public class OrderEntity {
 	@JoinColumn(name = "consigneeId", referencedColumnName = "ClientId")
 	private ClientDetailsEntity consignee;
 
+	@Column(name = "DeliveryGuids",columnDefinition="TEXT")
+	private String deliveryGuids;
+
 	public OrderEntity() {
 
 	}
@@ -100,10 +103,17 @@ public class OrderEntity {
 		this.isDeleted = orderDetailsJson.isDeleted();
 		this.noOfCartons = orderDetailsJson.getCartonCounts();
 	}
-	
-	
 
-	public UserDetailsEntity getOrderCreatedBy() {
+
+    public String getDeliveryGuids() {
+        return deliveryGuids;
+    }
+
+    public void setDeliveryGuids(String deliveryGuids) {
+        this.deliveryGuids = deliveryGuids;
+    }
+
+    public UserDetailsEntity getOrderCreatedBy() {
 		return orderCreatedBy;
 	}
 
@@ -238,19 +248,25 @@ public class OrderEntity {
 	}
 
 
-	@Override
-	public String toString() {
-		return "OrderEntity [id=" + id + ", orderId=" + orderId + ", orderGuid=" + orderGuid + ", orderStatus="
-				+ orderStatus + ", paymentStatus=" + paymentStatus + ", orderedDate=" + orderedDate
-				+ ", lastModifiedDate=" + lastModifiedDate + ", serverTime=" + serverTime + ", isDeleted=" + isDeleted
-				+ ", orderedItems=" + orderedItems + ", productDetails=" + productDetails + ", noOfCartons="
-				+ noOfCartons + ", orderCreatedBy=" + orderCreatedBy + ", exporter=" + exporter + ", consignee="
-				+ consignee + "]";
-	}
-
-
-	
-
-	
-
+    @Override
+    public String toString() {
+        return "OrderEntity{" +
+                "id=" + id +
+                ", orderId='" + orderId + '\'' +
+                ", orderGuid='" + orderGuid + '\'' +
+                ", orderStatus=" + orderStatus +
+                ", paymentStatus=" + paymentStatus +
+                ", orderedDate=" + orderedDate +
+                ", lastModifiedDate=" + lastModifiedDate +
+                ", serverTime=" + serverTime +
+                ", isDeleted=" + isDeleted +
+                ", orderedItems='" + orderedItems + '\'' +
+                ", productDetails='" + productDetails + '\'' +
+                ", noOfCartons='" + noOfCartons + '\'' +
+                ", orderCreatedBy=" + orderCreatedBy +
+                ", exporter=" + exporter +
+                ", consignee=" + consignee +
+                ", deliveryGuids='" + deliveryGuids + '\'' +
+                '}';
+    }
 }
