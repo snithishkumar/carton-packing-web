@@ -12,6 +12,7 @@ public class DeliveryDetailsEntity {
 	public static final String DELIVERY_DETAILS_ID = "deliveryDetailsId";
     public static final String DELIVERY_UUID = "deliveryUUID";
     public static final String ORDER_ID = "orderEntity";
+    public static final String SERVER_SYNC_TIME = "serverSyncTime";
 
     @Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

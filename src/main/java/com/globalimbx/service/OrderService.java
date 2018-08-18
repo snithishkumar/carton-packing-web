@@ -36,6 +36,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class OrderService {
@@ -50,11 +51,11 @@ public class OrderService {
 	private JsonParser jsonParser;
 	
 	@Transactional(readOnly= true,propagation=Propagation.REQUIRED)
-	public ResponseEntity<String> getOrderList(long serverSyncTime){
+	public ResponseEntity<String> getOrderList(long lastOrderSyncTime, long lastDeliverySyncTime){
 		try{
             ServerSyncModel serverSyncModel = new ServerSyncModel();
-			List<OrderEntity> orderEntities = orderDao.getOrderList(serverSyncTime);
-            List<DeliveryDetailsEntity> deliveryDetailsEntityList = orderDao.getDeliveryDetailsEntity();
+			List<OrderEntity> orderEntities = orderDao.getOrderList(lastOrderSyncTime);
+            List<DeliveryDetailsEntity> deliveryDetailsEntityList = orderDao.getDeliveryDetailsEntity(lastDeliverySyncTime);
 			for(OrderEntity orderEntity : orderEntities){
 				OrderDetailsJson orderDetailsJson = new OrderDetailsJson(orderEntity);
 				String orderItemsJson = orderEntity.getOrderedItems();

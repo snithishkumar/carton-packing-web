@@ -17,12 +17,9 @@ public class OrderController {
 	private OrderService orderService;
 	
 	@RequestMapping(value = "mobile/getOrderList")
-	public ResponseEntity<String> getOrderList(@RequestParam String lastSyncTime){
-		long serverSyncTime = -1;
-		if(lastSyncTime != null){
-			serverSyncTime = Long.valueOf(lastSyncTime);
-		}
-		return orderService.getOrderList(serverSyncTime);
+	public ResponseEntity<String> getOrderList(@RequestParam long lastOrderSyncTime,@RequestParam long lastDeliverySyncTime){
+
+		return orderService.getOrderList(lastOrderSyncTime,lastDeliverySyncTime);
 	}
 	
 	@RequestMapping(value = "mobile/updateOrderDetails")

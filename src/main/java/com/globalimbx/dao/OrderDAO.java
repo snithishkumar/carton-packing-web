@@ -28,7 +28,7 @@ public class OrderDAO extends BaseDAO{
 	public List<OrderEntity> getOrderList(long lastSyncTime){
 		Criteria criteria = createCriteria(OrderEntity.class);
 		if(lastSyncTime > 0){
-			criteria.add(Restrictions.ge(OrderEntity.SERVER_TIME, lastSyncTime));
+			criteria.add(Restrictions.gt(OrderEntity.SERVER_TIME, lastSyncTime));
 		}
 		return criteria.list();
 	}
@@ -216,8 +216,9 @@ public class OrderDAO extends BaseDAO{
 
 
 
-	public List<DeliveryDetailsEntity> getDeliveryDetailsEntity(){
+	public List<DeliveryDetailsEntity> getDeliveryDetailsEntity(long lastDeliverySyncTime){
 		Criteria criteria = createCriteria(DeliveryDetailsEntity.class);
+        criteria.add(Restrictions.gt(DeliveryDetailsEntity.SERVER_SYNC_TIME,lastDeliverySyncTime));
 		List<DeliveryDetailsEntity> deliveryDetailsEntities = criteria.list();
 		return deliveryDetailsEntities;
 	}
