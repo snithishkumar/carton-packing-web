@@ -97,8 +97,6 @@ public class OrderEntity {
 
 	
 	public void copyBeanValue(OrderDetailsJson orderDetailsJson){
-		this.orderStatus = orderDetailsJson.getOrderStatus();
-		this.lastModifiedDate = orderDetailsJson.getLastModifiedDate();
 		this.serverTime = System.currentTimeMillis();
 		this.isDeleted = orderDetailsJson.isDeleted();
 		this.noOfCartons = orderDetailsJson.getCartonCounts();

@@ -152,6 +152,12 @@ public class OrderService {
                         OrderEntity orderEntity = orderDao.getOrderEntity(orderDetailsJson.getOrderGuid());
                         if (orderEntity != null) {
                             orderEntity.copyBeanValue(orderDetailsJson);
+                            if(orderEntity.getOrderStatus().getOrderStatusId() <= orderDetailsJson.getOrderStatus().getOrderStatusId()){
+                                orderEntity.setOrderStatus(orderDetailsJson.getOrderStatus());
+                            }
+                            if(orderEntity.getLastModifiedDate() < orderDetailsJson.getLastModifiedDate()){
+                                orderEntity.setLastModifiedDate(orderDetailsJson.getLastModifiedDate());
+                            }
 							String dbProductDetails = orderEntity.getProductDetails();
 
                             List<CartonDetailsJson> productList = orderDetailsJson.getProductDetails();
