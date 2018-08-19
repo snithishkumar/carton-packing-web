@@ -202,7 +202,7 @@ public class OrderService {
                                             dbCartonDetailsJson.setLastModifiedBy(cartonDetailsJson.getLastModifiedBy());
                                         }
 
-                                        if(dbCartonDetailsJson.getTotalWeight() == null){
+                                        if(dbCartonDetailsJson.getTotalWeight() == null || dbCartonDetailsJson.getTotalWeight().equals("0")){
                                             dbCartonDetailsJson.setTotalWeight(cartonDetailsJson.getTotalWeight());
                                         }
                                         dbCartonDetailsJson.getProductDetailsJsonList().addAll(cartonDetailsJson.getProductDetailsJsonList());
