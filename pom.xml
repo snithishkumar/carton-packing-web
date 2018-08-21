@@ -156,16 +156,6 @@
 		</dependency>
 
 
-		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli -->
-		<!-- <dependency> <groupId>org.apache.tomcat</groupId> <artifactId>tomcat-juli</artifactId> 
-			<version>9.0.0.M9</version> </dependency> -->
-
-
-		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp -->
-
-		<!-- <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
-			<version>5.1.38</version> </dependency> -->
-
 		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
