@@ -5,11 +5,30 @@ public class ClientDetailsJson {
 	    private String clientDetailsUUID;
 	    private String exporterDetails;
 	    private String exporterRef;
+	    private String consigneeName;
+	    private String consigneeAuthorityPerson;
 	    private String consigneeDetails;
 	    private String tinNumber;
 	    private String exporterCountry;
 	    private String consigneeCountry;
-		public String getClientDetailsUUID() {
+
+	public String getConsigneeName() {
+		return consigneeName;
+	}
+
+	public void setConsigneeName(String consigneeName) {
+		this.consigneeName = consigneeName;
+	}
+
+	public String getConsigneeAuthorityPerson() {
+		return consigneeAuthorityPerson;
+	}
+
+	public void setConsigneeAuthorityPerson(String consigneeAuthorityPerson) {
+		this.consigneeAuthorityPerson = consigneeAuthorityPerson;
+	}
+
+	public String getClientDetailsUUID() {
 			return clientDetailsUUID;
 		}
 		public void setClientDetailsUUID(String clientDetailsUUID) {
