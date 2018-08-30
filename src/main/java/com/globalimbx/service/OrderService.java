@@ -517,6 +517,8 @@ public class OrderService {
 				creationDetailsJson.setProductStyle(productDetailsEntity.getProductName());
 				creationDetailsJson.setUnitPrice(productDetailsEntity.getUnitPrice());
 				creationDetailsJson.setOrderItemGuid(UUID.randomUUID().toString());
+				creationDetailsJson.setCreatedDateTime(orderEntity.getOrderedDate());
+				creationDetailsJson.setLastModifiedDateTime(orderEntity.getOrderedDate());
 			}
 			CompanyDetailsEntity companyDetailsEntity = userDao.getCompanyDetailsEntity(orderCreationRequestJson.getExporter());
 			orderEntity.setExporter(companyDetailsEntity);
